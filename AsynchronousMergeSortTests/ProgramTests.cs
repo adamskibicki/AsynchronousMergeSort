@@ -7,10 +7,21 @@ namespace AsynchronousMergeSortTests
     [TestClass]
     public class ProgramTests
     {
+        private static void MergeSortParallelTestWrapper(int parallelTaskCount)
+        {
+            var array = Program.GetArrayOfRandomNumbers(100000, int.MinValue, int.MaxValue, int.MaxValue);
+            var arrayCopy = Program.GetArrayCopy(array).ToList();
+            arrayCopy.Sort();
+
+            Program.MergeSortParallel(array, 0, 100000 - 1, parallelTaskCount);
+
+            CollectionAssert.AreEqual(arrayCopy, array);
+        }
+
         [TestMethod]
         public void test_count_of_GetArrayOfRandomNumbers()
         {
-            var array = Program.GetArrayOfRandomNumbers(10000, 0, 1);
+            var array = Program.GetArrayOfRandomNumbers(10000, 0, 1, int.MaxValue);
 
             Assert.AreEqual(10000, array.Length);
         }
@@ -18,22 +29,9 @@ namespace AsynchronousMergeSortTests
         [TestMethod]
         public void test_value_setting_of_GetArrayOfRandomNumbers()
         {
-            var array = Program.GetArrayOfRandomNumbers(10000, 1, int.MaxValue);
+            var array = Program.GetArrayOfRandomNumbers(10000, 1, int.MaxValue, int.MaxValue);
 
             Assert.IsTrue(array.All(x => x != 0));
-        }
-
-        [TestMethod]
-        public void test_MergeArrays_returns_sorted_array()
-        {
-            var array1 = new[] { 1, 1, 2, 2, 3, 4, 5, 8, 9 };
-            var array2 = new[] { 1, 1, 2, 2, 3, 4, 5, 8, 9 };
-
-            var array = Program.MergeArrays(array1, array2);
-
-            var array3 = new[] { 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 5, 5, 8, 8, 9, 9 };
-
-            CollectionAssert.AreEqual(array3, array);
         }
 
         [TestMethod]
@@ -61,117 +59,48 @@ namespace AsynchronousMergeSortTests
         }
 
         [TestMethod]
-        public void test_MergeSort()
+        public void test_GetArrayCopy_returns_new_array()
         {
-            var array = Program.GetArrayOfRandomNumbers(1000000, int.MinValue, int.MaxValue);
-            var arrayCopy = new int[1000000];
+            var array = Program.GetArrayOfRandomNumbers(1000000, int.MinValue, int.MaxValue, int.MaxValue);
+            var arrayCopy = Program.GetArrayCopy(array);
 
-            for (int i = 0; i < 1000000; i++)
-            {
-                arrayCopy[i] = array[i];
-            }
+            Assert.AreNotEqual(array, arrayCopy);
+        }
 
-            Program.MergeSort(array, 0, 999999);
-            var list = arrayCopy.ToList();
-            list.Sort();
-            arrayCopy = list.ToArray();
+        [TestMethod]
+        public void test_GetArrayCopy_returns_array_with_identical_values()
+        {
+            var array = Program.GetArrayOfRandomNumbers(1000000, int.MinValue, int.MaxValue, int.MaxValue);
+            var arrayCopy = Program.GetArrayCopy(array);
 
-            CollectionAssert.AreEqual(arrayCopy, array);
+            CollectionAssert.AreEqual(array, arrayCopy);
+        }
+
+        [TestMethod]
+        public void test_MergeSortParallelX1()
+        {
+            MergeSortParallelTestWrapper(1);
         }
 
         [TestMethod]
         public void test_MergeSortParallelX2()
         {
-            var array = Program.GetArrayOfRandomNumbers(1000000, int.MinValue, int.MaxValue);
-            var arrayCopy = new int[1000000];
-
-            for (int i = 0; i < 1000000; i++)
-            {
-                arrayCopy[i] = array[i];
-            }
-
-            Program.MergeSortParallelX2(array, 0, 999999);
-            var list = arrayCopy.ToList();
-            list.Sort();
-            arrayCopy = list.ToArray();
-
-            CollectionAssert.AreEqual(arrayCopy, array);
-        }
-
-        [TestMethod]
-        public void test_MergeSortParallelX4()
-        {
-            var array = Program.GetArrayOfRandomNumbers(1000000, int.MinValue, int.MaxValue);
-            var arrayCopy = new int[1000000];
-
-            for (int i = 0; i < 1000000; i++)
-            {
-                arrayCopy[i] = array[i];
-            }
-
-            Program.MergeSortParallelX4(array, 0, 999999);
-            var list = arrayCopy.ToList();
-            list.Sort();
-            arrayCopy = list.ToArray();
-
-            CollectionAssert.AreEqual(arrayCopy, array);
+            MergeSortParallelTestWrapper(2);
         }
 
         [TestMethod]
         public void test_MergeSortParallelX3()
         {
-            var array = Program.GetArrayOfRandomNumbers(1000000, int.MinValue, int.MaxValue);
-            var arrayCopy = new int[1000000];
-
-            for (int i = 0; i < 1000000; i++)
-            {
-                arrayCopy[i] = array[i];
-            }
-
-            Program.MergeSortParallelX3(array, 0, 999999);
-            var list = arrayCopy.ToList();
-            list.Sort();
-            arrayCopy = list.ToArray();
-
-            CollectionAssert.AreEqual(arrayCopy, array);
+            MergeSortParallelTestWrapper(3);
         }
 
         [TestMethod]
-        public void test_MergeSortParallelX6()
+        public void test_MergeSortParallel_fromX4_toX128()
         {
-            var array = Program.GetArrayOfRandomNumbers(1000000, int.MinValue, int.MaxValue);
-            var arrayCopy = new int[1000000];
-
-            for (int i = 0; i < 1000000; i++)
+            for (int i = 4; i <= 128; i++)
             {
-                arrayCopy[i] = array[i];
+                MergeSortParallelTestWrapper(i);
             }
-
-            Program.MergeSortParallelX6(array, 0, 999999);
-            var list = arrayCopy.ToList();
-            list.Sort();
-            arrayCopy = list.ToArray();
-
-            CollectionAssert.AreEqual(arrayCopy, array);
-        }
-
-        [TestMethod]
-        public void test_MergeSortParallelX8()
-        {
-            var array = Program.GetArrayOfRandomNumbers(1000000, int.MinValue, int.MaxValue);
-            var arrayCopy = new int[1000000];
-
-            for (int i = 0; i < 1000000; i++)
-            {
-                arrayCopy[i] = array[i];
-            }
-
-            Program.MergeSortParallelX8(array, 0, 999999);
-            var list = arrayCopy.ToList();
-            list.Sort();
-            arrayCopy = list.ToArray();
-
-            CollectionAssert.AreEqual(arrayCopy, array);
         }
     }
 }
