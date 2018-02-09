@@ -19,7 +19,7 @@ namespace AsynchronousMergeSortTests
         }
 
         [TestMethod]
-        public void test_count_of_GetArrayOfRandomNumbers()
+        public void test_GetArrayOfRandomNumbers_array_length()
         {
             var array = Program.GetArrayOfRandomNumbers(10000, 0, 1, int.MaxValue);
 
@@ -27,11 +27,20 @@ namespace AsynchronousMergeSortTests
         }
 
         [TestMethod]
-        public void test_value_setting_of_GetArrayOfRandomNumbers()
+        public void test_GetArrayOfRandomNumbers_value_setting()
         {
             var array = Program.GetArrayOfRandomNumbers(10000, 1, int.MaxValue, int.MaxValue);
 
             Assert.IsTrue(array.All(x => x != 0));
+        }
+
+        [TestMethod]
+        public void test_GetArrayOfRandomNumbers_returns_identical_arrays_for_same_seed()
+        {
+            var array = Program.GetArrayOfRandomNumbers(10000, 1, int.MaxValue, int.MaxValue);
+            var array1 = Program.GetArrayOfRandomNumbers(10000, 1, int.MaxValue, int.MaxValue);
+
+            CollectionAssert.AreEqual(array, array1);
         }
 
         [TestMethod]
@@ -95,9 +104,9 @@ namespace AsynchronousMergeSortTests
         }
 
         [TestMethod]
-        public void test_MergeSortParallel_fromX4_toX128()
+        public void test_MergeSortParallel_fromX4_toX32()
         {
-            for (int i = 4; i <= 128; i++)
+            for (int i = 4; i <= 32; i++)
             {
                 MergeSortParallelTestWrapper(i);
             }
