@@ -6,15 +6,18 @@ namespace AsynchronousMergeSort
 {
     public class Program
     {
+        public static readonly int ArrayLength = 5000000;
+        public static readonly int ParallelTests = 16;
+
         static void Main()
         {
-            var array = GetArrayOfRandomNumbers(1000000, int.MinValue, int.MaxValue, int.MaxValue);
+            var array = GetArrayOfRandomNumbers(ArrayLength, int.MinValue, int.MaxValue, int.MaxValue);
 
-            for (int i = 1; i <= 97; i++)
+            for (int i = 1; i <= ParallelTests; i++)
             {
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
-                MergeSortParallel(GetArrayCopy(array), 0, 1000000 - 1, i);
+                MergeSortParallel(GetArrayCopy(array), 0, ArrayLength - 1, i);
                 stopWatch.Stop();
 
                 Console.WriteLine("parallel x{0} merge sort time={1}", i, stopWatch.Elapsed.TotalMilliseconds);
@@ -159,5 +162,6 @@ namespace AsynchronousMergeSort
                 array[index++] = array1[index1++];
             }
         }
+       
     }
 }
